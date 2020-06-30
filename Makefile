@@ -27,7 +27,7 @@ notebook:
 	docker run -it -p 8888:8888 --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
-# run the unit tests in /src/test
+# run the unit tests in src/tests
 #
 .PHONY : tests
 tests:
