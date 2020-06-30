@@ -1,0 +1,12 @@
+numpy
+scipy
+pandas>=1.0.0
+
+matplotlib
+seaborn
+plotly
+
+black
+pytest
+
+jupyter
