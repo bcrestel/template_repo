@@ -1,7 +1,11 @@
 ###################
-# PARAMETERS
+# PARAMETERS TO MODIFY
 IMAGE_NAME = image_name
 TAG_NAME = tag_name
+###################
+# FIXED PARAMETERS
+TEST_FOLDER = src/tests
+FORMAT_FOLDER = src
 ###################
 
 
@@ -31,4 +35,13 @@ notebook:
 #
 .PHONY : tests
 tests:
-	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "pytest -v --rootdir=src/tests"
+	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "pytest -v --rootdir=$(TEST_FOLDER)"
+
+#
+# formatting with black
+# + ordering of imports with isort
+#
+.PHONY : format
+format:
+	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "isort -rc $(FORMAT_FOLDER)"
+	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "black $(FORMAT_FOLDER)"
