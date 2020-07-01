@@ -12,29 +12,31 @@ FORMAT_FOLDER = src
 #
 # build image
 #
-.PHONY : build
-build:
+build: Dockerfile requirements.txt
+	$(info ***** Building Image *****)
 	docker build -t $(IMAGE_NAME)/$(TAG_NAME) .
+	touch build
 
 #
 # run shell
 #
 .PHONY : shell
-shell:
+shell: build
+	$(info ***** Creating shell *****)
 	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME)
 
 #
 # start notebook
 #
 .PHONY : notebook
-notebook:
+notebook: build
 	docker run -it -p 8888:8888 --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
 # run the unit tests in src/tests
 #
 .PHONY : tests
-tests:
+tests: build
 	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
@@ -42,6 +44,6 @@ tests:
 # + ordering of imports with isort
 #
 .PHONY : format
-format:
+format: build
 	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "isort -rc $(FORMAT_FOLDER)"
 	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "black $(FORMAT_FOLDER)"

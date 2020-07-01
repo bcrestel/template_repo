@@ -11,3 +11,5 @@ isort
 pytest
 
 jupyter
+jupyter_contrib_nbextensions
+ipython
