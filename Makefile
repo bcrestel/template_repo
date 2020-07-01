@@ -1,23 +1,26 @@
 ###################
 # PARAMETERS TO MODIFY
 IMAGE_NAME = image_name
-TAG_NAME = tag_name
+IMAGE_TAG = 1.0
 ###################
 # FIXED PARAMETERS
 TEST_FOLDER = src/tests
 FORMAT_FOLDER = src
 DOCKER_RUN = docker run -it --entrypoint=bash -w /home -v $(PWD):/home/
-DOCKER_IMAGE = $(IMAGE_NAME)/$(TAG_NAME)
+DOCKER_IMAGE = $(IMAGE_NAME):$(IMAGE_TAG)
 ###################
 
 
 #
 # build image
 #
-build: Dockerfile requirements.txt
+.PHONY : build
+build: .build
+
+.build: Dockerfile requirements.txt
 	$(info ***** Building Image *****)
 	@docker build -t $(DOCKER_IMAGE) .
-	@touch build
+	@touch .build
 
 #
 # run shell
