@@ -16,8 +16,8 @@ DOCKER_IMAGE = $(IMAGE_NAME)/$(TAG_NAME)
 #
 build: Dockerfile requirements.txt
 	$(info ***** Building Image *****)
-	docker build -t $(DOCKER_IMAGE) .
-	touch build
+	@docker build -t $(DOCKER_IMAGE) .
+	@touch build
 
 #
 # run shell
@@ -25,21 +25,23 @@ build: Dockerfile requirements.txt
 .PHONY : shell
 shell: build
 	$(info ***** Creating shell *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE)
+	@$(DOCKER_RUN) $(DOCKER_IMAGE)
 
 #
 # start notebook
 #
 .PHONY : notebook
 notebook: build
-	$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
+	$(info ***** Starting a notebook *****)
+	@$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
 # run the unit tests in src/tests
 #
 .PHONY : tests
 tests: build
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
+	$(info ***** Running all unit tests *****)
+	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
 # formatting with black
@@ -47,5 +49,7 @@ tests: build
 #
 .PHONY : format
 format: build
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
+	$(info ***** Formatting: running isort *****)
+	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
+	$(info ***** Formatting: running black *****)
+	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
