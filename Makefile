@@ -6,6 +6,8 @@ TAG_NAME = tag_name
 # FIXED PARAMETERS
 TEST_FOLDER = src/tests
 FORMAT_FOLDER = src
+DOCKER_RUN = docker run -it --entrypoint=bash -w /home -v $(PWD):/home/
+DOCKER_IMAGE = $(IMAGE_NAME)/$(TAG_NAME)
 ###################
 
 
@@ -14,7 +16,7 @@ FORMAT_FOLDER = src
 #
 build: Dockerfile requirements.txt
 	$(info ***** Building Image *****)
-	docker build -t $(IMAGE_NAME)/$(TAG_NAME) .
+	docker build -t $(DOCKER_IMAGE) .
 	touch build
 
 #
@@ -23,21 +25,21 @@ build: Dockerfile requirements.txt
 .PHONY : shell
 shell: build
 	$(info ***** Creating shell *****)
-	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME)
+	$(DOCKER_RUN) $(DOCKER_IMAGE)
 
 #
 # start notebook
 #
 .PHONY : notebook
 notebook: build
-	docker run -it -p 8888:8888 --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
+	$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
 # run the unit tests in src/tests
 #
 .PHONY : tests
 tests: build
-	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "pytest -v --rootdir=$(TEST_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
 # formatting with black
@@ -45,5 +47,5 @@ tests: build
 #
 .PHONY : format
 format: build
-	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "isort -rc $(FORMAT_FOLDER)"
-	docker run -it --entrypoint=bash -w /home -v $(PWD):/home/ $(IMAGE_NAME)/$(TAG_NAME) -c "black $(FORMAT_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
