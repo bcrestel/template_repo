@@ -11,14 +11,6 @@ DOCKER_IMAGE = $(IMAGE_NAME):$(IMAGE_TAG)
 ###################
 
 #
-# run main code
-#
-.PHONY : run
-run: build
-	$(info ***** Running *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE)  -c "cd src; python hello_world.py"
-
-#
 # build image
 #
 .PHONY : build
@@ -29,24 +21,37 @@ build: .build
 	docker build -t $(DOCKER_IMAGE) .
 	@touch .build
 
+requirements.txt: requirements.in
+	$(info ***** Pinning requirements.txt *****)
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pip-compile --output-file requirements.txt requirements.in"
+	@touch requirements.txt
+
+.PHONY : upgrade
+upgrade:
+	$(info ***** Upgrading dependencies *****)
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pip-compile --upgrade --output-file requirements.txt requirements.in"
+	@touch requirements.txt
+
 #
-# run shell
+# Run commands
 #
+.PHONY : run
+run: build
+	$(info ***** Running *****)
+	$(DOCKER_RUN) $(DOCKER_IMAGE)  -c "cd src; python hello_world.py"
+
 .PHONY : shell
 shell: build
 	$(info ***** Creating shell *****)
 	$(DOCKER_RUN) $(DOCKER_IMAGE)
 
-#
-# start notebook
-#
 .PHONY : notebook
 notebook: build
 	$(info ***** Starting a notebook *****)
 	$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
-# run the unit tests in src/tests
+# Testing
 #
 .PHONY : tests
 tests: build
@@ -54,8 +59,7 @@ tests: build
 	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
-# formatting with black
-# + ordering of imports with isort
+# Formatting
 #
 .PHONY : format
 format: build
@@ -63,7 +67,6 @@ format: build
 	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
 	$(info ***** Formatting: running black *****)
 	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
-
 
 #
 # Cleaning
