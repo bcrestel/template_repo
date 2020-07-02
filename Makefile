@@ -10,6 +10,13 @@ DOCKER_RUN = docker run -it --entrypoint=bash -w /home -v $(PWD):/home/
 DOCKER_IMAGE = $(IMAGE_NAME):$(IMAGE_TAG)
 ###################
 
+#
+# run main code
+#
+.PHONY : run
+run: build
+	$(info ***** Running *****)
+	$(DOCKER_RUN) $(DOCKER_IMAGE)  -c "cd src; python hello_world.py"
 
 #
 # build image
@@ -19,7 +26,7 @@ build: .build
 
 .build: Dockerfile requirements.txt
 	$(info ***** Building Image *****)
-	@docker build -t $(DOCKER_IMAGE) .
+	docker build -t $(DOCKER_IMAGE) .
 	@touch .build
 
 #
@@ -28,7 +35,7 @@ build: .build
 .PHONY : shell
 shell: build
 	$(info ***** Creating shell *****)
-	@$(DOCKER_RUN) $(DOCKER_IMAGE)
+	$(DOCKER_RUN) $(DOCKER_IMAGE)
 
 #
 # start notebook
@@ -36,7 +43,7 @@ shell: build
 .PHONY : notebook
 notebook: build
 	$(info ***** Starting a notebook *****)
-	@$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
+	$(DOCKER_RUN) -p 8888:8888 $(DOCKER_IMAGE) -c "jupyter notebook --ip=$(hostname -I) --no-browser --allow-root"
 
 #
 # run the unit tests in src/tests
@@ -44,7 +51,7 @@ notebook: build
 .PHONY : tests
 tests: build
 	$(info ***** Running all unit tests *****)
-	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
 # formatting with black
@@ -53,6 +60,15 @@ tests: build
 .PHONY : format
 format: build
 	$(info ***** Formatting: running isort *****)
-	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "isort -rc $(FORMAT_FOLDER)"
 	$(info ***** Formatting: running black *****)
-	@$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "black $(FORMAT_FOLDER)"
+
+
+#
+# Cleaning
+#
+.PHONY : clean
+clean:
+	$(info ***** Cleaning files *****)
+	rm -rf .build
