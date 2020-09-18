@@ -8,6 +8,8 @@ TEST_FOLDER = src/tests
 FORMAT_FOLDER = src
 DOCKER_RUN = docker run -it --entrypoint=bash -w /home -v $(PWD):/home/
 DOCKER_IMAGE = $(IMAGE_NAME):$(IMAGE_TAG)
+DOCKERFILE_PIPTOOLS = Dockerfile_piptools
+DOCKER_IMAGE_PIPTOOLS = piptools:1.0
 ###################
 
 #
@@ -21,10 +23,15 @@ build: .build
 	docker build -t $(DOCKER_IMAGE) .
 	@touch .build
 
-requirements.txt: requirements.in
+requirements.txt: .build_piptools requirements.in
 	$(info ***** Pinning requirements.txt *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pip-compile --output-file requirements.txt requirements.in"
+	$(DOCKER_RUN) $(DOCKER_IMAGE_PIPTOOLS) -c "pip-compile --output-file requirements.txt requirements.in"
 	@touch requirements.txt
+
+.build_piptools: Dockerfile_piptools
+	$(info ***** Building Image piptools:1.0 *****)
+	docker build -f $(DOCKERFILE_PIPTOOLS) -t $(DOCKER_IMAGE_PIPTOOLS) .
+	@touch .build_piptools
 
 .PHONY : upgrade
 upgrade:
