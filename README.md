@@ -20,12 +20,8 @@ you first need to modify the following parameters in the ``Makefile``:
 * ``IMAGE_NAME``
 * ``IMAGE_TAG``
 
-The repo comes with a default ``requirements.txt`` that only installs ``pip-tools``. 
-This is required to generate a pinned ``requirements.txt`` from a ``requirements.in`` file.
-Therefore, go check the ``requirements.in`` file and add/remove/modify any dependency you would like.
-Once you're satisfied, you can build the image by doing ``make build``.
-If you haven't modified the ``requirements.in`` file, you first need to force the udpate the ``requirements.txt`` file
-by doing ``make upgrade``. Then you can ``make build``.
+After that, you can modify the default list of the dependencies in the ``requirements.in`` file.
+And when you're ready, you can build your Docker image with the ``make build`` command. 
 
 Source code should be placed in the folder ``src``.
 Unit tests should be placed in the folder ``src/tests``. 

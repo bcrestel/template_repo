@@ -36,7 +36,7 @@ requirements.txt: .build_piptools requirements.in
 .PHONY : upgrade
 upgrade:
 	$(info ***** Upgrading dependencies *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pip-compile --upgrade --output-file requirements.txt requirements.in"
+	$(DOCKER_RUN) $(DOCKER_IMAGE_PIPTOOLS) -c "pip-compile --upgrade --output-file requirements.txt requirements.in"
 	@touch requirements.txt
 
 #
@@ -81,4 +81,4 @@ format: build
 .PHONY : clean
 clean:
 	$(info ***** Cleaning files *****)
-	rm -rf .build
+	rm -rf .build .build_piptools requirements.txt
