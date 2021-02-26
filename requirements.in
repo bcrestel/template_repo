@@ -1,6 +1,7 @@
 numpy
 scipy
 pandas>=1.0.0
+pandas_profiling
 
 matplotlib
 seaborn
@@ -10,6 +11,7 @@ black
 isort
 pytest
 pip-tools
+requests
 
 jupyter
 jupyter_contrib_nbextensions
