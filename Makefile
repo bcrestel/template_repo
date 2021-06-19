@@ -63,7 +63,7 @@ notebook: build
 .PHONY : tests
 tests: build
 	$(info ***** Running all unit tests *****)
-	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "pytest -v --rootdir=$(TEST_FOLDER)"
+	$(DOCKER_RUN) $(DOCKER_IMAGE) -c "python -m pytest -v --rootdir=$(TEST_FOLDER)"
 
 #
 # Formatting
