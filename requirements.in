@@ -13,6 +13,7 @@ pytest
 pip-tools
 requests
 
-jupyter
-jupyter_contrib_nbextensions
+jupyterlab
 ipython
+
+mlflow
