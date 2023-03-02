@@ -26,6 +26,7 @@ build: .build
 requirements.txt: .build_piptools requirements.in
 	$(info ***** Pinning requirements.txt *****)
 	$(DOCKER_RUN) $(DOCKER_IMAGE_PIPTOOLS) -c "pip-compile --output-file requirements.txt requirements.in"
+	#$(DOCKER_RUN) $(DOCKER_IMAGE_PIPTOOLS) -c "pip-compile --resolver=backtracking --output-file requirements.txt requirements.in" # adding this here just in case: resolver=backtracking was necessary to build another image once
 	@touch requirements.txt
 
 .build_piptools: Dockerfile_piptools
