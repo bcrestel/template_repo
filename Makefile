@@ -20,7 +20,7 @@ build: .build
 
 .build: Dockerfile requirements.txt
 	$(info ***** Building Image *****)
-	docker build -t $(DOCKER_IMAGE) .
+	docker build --rm -t $(DOCKER_IMAGE) .
 	@touch .build
 
 requirements.txt: .build_piptools requirements.in
@@ -31,7 +31,7 @@ requirements.txt: .build_piptools requirements.in
 
 .build_piptools: Dockerfile_piptools
 	$(info ***** Building Image piptools:1.0 *****)
-	docker build -f $(DOCKERFILE_PIPTOOLS) -t $(DOCKER_IMAGE_PIPTOOLS) .
+	docker build --rm -f $(DOCKERFILE_PIPTOOLS) -t $(DOCKER_IMAGE_PIPTOOLS) .
 	@touch .build_piptools
 
 .PHONY : upgrade
