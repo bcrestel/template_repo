@@ -10,7 +10,6 @@ plotly
 black
 isort
 pytest
-pip-tools
 requests
 
 jupyterlab
