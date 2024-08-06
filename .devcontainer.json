@@ -2,7 +2,7 @@
     "image": "IMAGE_NAME:IMAGE_TAG",
     "customizations": {
         "vscode": {
-            "extensions": ["microsoft.python"]
+             "extensions": ["ms-python.python", "njpwerner.autodocstring"]
         }
     }
 }
